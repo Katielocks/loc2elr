@@ -23,11 +23,11 @@ def link_bplan_to_elr(
     bplan_gdf: gpd.GeoDataFrame,
     track_gdf: gpd.GeoDataFrame,
     *,
-    loc_col: str = cfg.model.loc_id,
+    loc_col: str = cfg.model.loc_id_field,
     easting_col: str = "EASTING",
     northing_col: str = "NORTHING",
-    elr_col: str = cfg.model.elr_id,
-    start_col: str = cfg.model.start_id,
+    elr_col: str = cfg.model.elr_id_field,
+    start_col: str = cfg.model.start_id_field,
     max_distance_m: float = cfg.model.max_distance_m,
     seg_length: int = cfg.model.seg_length_mi
 ) -> pd.DataFrame:
@@ -124,11 +124,11 @@ def loc2elr(
     bplan_source: str | Path | None = None,
     track_source: str | Path | None = None,
     output_path: str | Path | None = None,
-    loc_col: str = cfg.model.loc_id,
+    loc_col: str = cfg.model.loc_id_field,
     easting_col: str = "EASTING",
     northing_col: str = "NORTHING",
-    elr_col: str = cfg.model.elr_id,
-    start_col: str = cfg.model.start_id,
+    elr_col: str = cfg.model.elr_id_field,
+    start_col: str = cfg.model.start_id_field,
     max_distance_m: float = cfg.model.max_distance_m,
     seg_length_mi: int = cfg.model.seg_length_mi
 ) -> pd.DataFrame:
