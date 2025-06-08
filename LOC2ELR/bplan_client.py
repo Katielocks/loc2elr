@@ -89,6 +89,7 @@ def get_bplan(input_path:str | Path):
 
     try:
         df = pd.DataFrame(loc_records)
+        print(df.head())
         df["OS_EASTING"] = pd.to_numeric(df["OS_EASTING"], errors="coerce")
         df["OS_NORTHING"] = pd.to_numeric(df["OS_NORTHING"], errors="coerce")
         df["STANOX"] = df["STANOX"].replace(r"^\s*$", np.nan, regex=True)

@@ -23,8 +23,7 @@ class ZipFileNotFoundError(ELRClientError):
 def _open_zip(input_path: Union[str, Path]) -> Path:
     zip_path = Path(input_path).expanduser().resolve()
     if not zip_path.exists():
-        raise FileNotFoundError(f"Local Track Model not found at {zip_path}")
-
+        raise ZipFileNotFoundError(f"Local Track Model not found at {zip_path}")
     try:
         with zipfile.ZipFile(zip_path, 'r') as zf:
             members = zf.namelist()
@@ -34,19 +33,16 @@ def _open_zip(input_path: Union[str, Path]) -> Path:
                 p = Path(m)
                 if p.stem.lower() == stem and p.suffix.lower() in required:
                     required[p.suffix.lower()] = m
-
             if not all(required.values()):
                 missing = [ext for ext, path in required.items() if path is None]
-                raise ELRClientError(
-                    f"Missing {', '.join(missing)} for {stem} in {zip_path.name}"
-                )
-
-            temp_dir = Path(tempfile.mkdtemp(prefix="NWR_TM_"))
+                raise ELRClientError(f"Missing {', '.join(missing)} for {stem} in {zip_path.name}")
+            temp_dir = Path(tempfile.mkdtemp(prefix="NWR_TM_")).resolve()
             for member in required.values():
+                dest = (temp_dir / member).resolve()
+                if not str(dest).startswith(str(temp_dir)):
+                    raise ELRClientError(f"Unsafe zip member path: {member}")
                 zf.extract(member, path=temp_dir)
-
             return temp_dir / f"{stem}.shp"
-
     except zipfile.BadZipFile as exc:
         raise ELRClientError(f"Invalid ZIP at {zip_path}: {exc}") from exc
     except ELRClientError:
@@ -54,12 +50,12 @@ def _open_zip(input_path: Union[str, Path]) -> Path:
     except Exception as exc:
         raise ELRClientError(f"Error processing {zip_path}: {exc}") from exc
 
-
 def get_elr(input_path: Union[str, Path]) -> Path:
     input_path = Path(input_path).expanduser().resolve()
 
     if input_path.suffix.lower() == ".zip":
-        shp = _open_zip(input_path)
+        with _open_zip(input_path) as shp:
+            return shp
 
     elif input_path.suffix.lower() == ".shp" and input_path.is_file():
         stem = input_path.stem

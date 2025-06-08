@@ -6,7 +6,6 @@ from typing import Union, Optional
 
 import geopandas as gpd
 import pandas as pd
-from shapely.geometry import Point
 
 from bplan_client import get_bplan
 from ELR_client import get_elr
@@ -62,9 +61,8 @@ def Loc2ELRMiles(
 
     track_gdf = track_gdf[[elr_col, start_col, "geometry"]]
 
-    track_gdf = track_gdf.set_crs("EPSG:27700", allow_override=True).to_crs("EPSG:27700")
+    track_gdf = track_gdf.set_crs(osgb_crs, allow_override=True).to_crs(osgb_crs)
 
-    # -------------------------------------------------------------------
     nearest = gpd.sjoin_nearest(
         bplan_gdf,
         track_gdf,
@@ -72,7 +70,6 @@ def Loc2ELRMiles(
         max_distance=max_distance,
         distance_col=f"{start_col}_DIST",
     )
-    # -------------------------------------------------------------------
     out_df = nearest[[loc_col, elr_col, easting_col, northing_col, start_col]]
     if seg_length:
         out_df[start_col] = (
@@ -96,5 +93,3 @@ def Loc2ELRMiles(
             raise  LOC2ELR(
                 f"Could not write {output_format.upper()} to {out_path}: {exc}"
             ) from exc
-
-Loc2ELRMiles()
