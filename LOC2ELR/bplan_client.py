@@ -9,13 +9,10 @@ from typing import Any, Dict, List
 
 import pandas as pd
 import numpy as np
-from pyproj import Transformer
 
 
 
 log = logging.getLogger(__name__)
-
-_TRANSFORMER = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
 
 _FIELDS = [
     "RECORD_TYPE",
