@@ -1,0 +1,16 @@
+{
+  "io": {
+    "BPLAN":   "data/bplan.zip",
+    "TRACK_MODEL": "data/NWR_TrackModel.zip"
+  },
+  "model": {
+    "LOC_ID_FIELD": "STANOX",
+    "ELR_ID_FIELD": "ELR",
+    "START_ID_FIELD": "START",
+    "MAX_DISTANCE_M": 1000,
+    "SEG_LENGTH_MI":  8
+  },
+  "output": {
+    "OUTPUT_DIR": "data/raw/LOC2ELR.csv"
+  }
+}
