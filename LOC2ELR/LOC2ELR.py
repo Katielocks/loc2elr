@@ -2,23 +2,26 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Union, Optional
-
+from typing import Union, Optional,Callable
 import geopandas as gpd
 import pandas as pd
 
-from bplan_client import get_bplan
-from ELR_client import get_elr
-from utils import OUTPUT_METHOD
-from config import settings as cfg
+from .bplan_client import get_bplan
+from .ELR_client import get_elr
+from .config import settings as cfg
 
-
+OUTPUT_METHOD: dict[str, Callable] = {
+    "csv":    pd.DataFrame.to_csv,
+    "parquet":pd.DataFrame.to_parquet,
+    "json":   pd.DataFrame.to_json,
+    "excel":  pd.DataFrame.to_excel
+}
 
 class   LOC2ELR(RuntimeError):
-    """Raised whenever we can't fetch/unpack/parse the BPLAN doc."""
+    pass
 
 
-def Loc2ELRMiles(
+def loc2elr_miles(
     bplan_source: Union[str, Path] = cfg.io.bplan,
     track_source: Union[str, Path] = cfg.io.track_model,
     *,
@@ -38,14 +41,8 @@ def Loc2ELRMiles(
     missing = required_cols - set(bplan_df.columns)
     if missing:
         raise ValueError(f"BPlan missing required columns: {sorted(missing)}")
-
-    track_path = get_elr(track_source)     
-    track_gdf = gpd.read_file(track_path)
-
+    
     osgb_crs = "EPSG:27700"
-    if track_gdf.crs is None:
-        track_gdf.set_crs(osgb_crs, inplace=True)
-    track_gdf = track_gdf.to_crs(osgb_crs)
 
     if not isinstance(bplan_df, gpd.GeoDataFrame):
         bplan_gdf = gpd.GeoDataFrame(
@@ -55,13 +52,13 @@ def Loc2ELRMiles(
             crs=osgb_crs,
         )
     else:
-        bplan_gdf = bplan_df.to_crs(osgb_crs)
-        track_path = get_elr(track_source)        
-    track_gdf   = gpd.read_file(track_path)
+        bplan_gdf = bplan_df.to_crs(osgb_crs)      
+    with get_elr(track_source) as track_path:
+        track_gdf = gpd.read_file(track_path)
+    if track_gdf.crs is None:
+        track_gdf.set_crs(osgb_crs, inplace=True)
 
     track_gdf = track_gdf[[elr_col, start_col, "geometry"]]
-
-    track_gdf = track_gdf.set_crs(osgb_crs, allow_override=True).to_crs(osgb_crs)
 
     nearest = gpd.sjoin_nearest(
         bplan_gdf,

@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import gzip
-import json
 import logging
 import tempfile
 import zipfile
-from datetime import timedelta
 from pathlib import Path
-from typing import Any, Dict, List,Callable
+from typing import Any, Dict, List
 
 import pandas as pd
 import numpy as np
@@ -89,13 +87,12 @@ def get_bplan(input_path:str | Path):
 
     try:
         df = pd.DataFrame(loc_records)
-        print(df.head())
         df["OS_EASTING"] = pd.to_numeric(df["OS_EASTING"], errors="coerce")
         df["OS_NORTHING"] = pd.to_numeric(df["OS_NORTHING"], errors="coerce")
         df["STANOX"] = df["STANOX"].replace(r"^\s*$", np.nan, regex=True)
 
         df = df[df["STANOX"].notna()]
-        df = df[df["OS_EASTING"].notna() & df["OS_EASTING"].ne(0) & df["OS_EASTING"].ne(999_999)]
+        df = df[df["OS_EASTING"].notna() & df["OS_EASTING"].ne(0) & df["OS_EASTING"].ne(999_999)] #Removing Placeholder values
     except Exception as exc:
         raise BplanClientError(f"Error processing BPLAN DataFrame: {exc}") from exc
 
