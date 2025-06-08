@@ -1,7 +1,7 @@
 from .config import settings
-from .LOC2ELR import Loc2ELRMiles
+from .loc2elr import loc2elr_miles
 
 __all__ = [
     "settings",
-    "Loc2ELRMiles"
+    "loc2elr_miles"
 ]
