@@ -5,7 +5,7 @@
 ## Required Data
 
 - **BPLAN**  
-  ZIP archives containing BPLAN shapefiles and `.loc` records.  
+  ZIP archives containing BPLAN shapefiles and `loc` records.  
   Sources:  
   - [Rail Data UK](https://www.raildata.org.uk/)  
   - [OpenRailData Archive](https://github.com/raildata/openraildata)
