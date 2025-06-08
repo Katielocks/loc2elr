@@ -33,7 +33,37 @@ def link_bplan_to_elr(
     max_distance_m: float = cfg.model.max_distance_m,
     seg_length: int = cfg.model.seg_length_mi
 ) -> pd.DataFrame:
+    """
+    Assigns each STANOX location from BPLAN to the nearest ELR track segment and computes bucket IDs.
 
+    Parameters
+    ----------
+    bplan_gdf : geopandas.GeoDataFrame
+        GeoDataFrame containing STANOX points with columns for location ID, easting and northing.
+    track_gdf : geopandas.GeoDataFrame
+        GeoDataFrame containing ELR track segments with ELR IDs and start mile markers.
+    loc_col : str, optional
+        Column name in bplan_gdf for the location identifier (default from config).
+    easting_col : str, optional
+        Column name for easting coordinates (default 'EASTING').
+    northing_col : str, optional
+        Column name for northing coordinates (default 'NORTHING').
+    elr_col : str, optional
+        Column name in track_gdf for the ELR identifier (default from config).
+    start_col : str, optional
+        Column name in track_gdf for the segment start mile marker (default from config).
+    max_distance_m : float, optional
+        Maximum search distance in meters for nearest neighbor join (default from config).
+    seg_length : int, optional
+        Segment length in miles for bucketing intervals (default from config).
+
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame containing original bplan data plus nearest ELR segment info and
+        'ELR_MIL' column combining ELR ID and bucketed start mile.
+    """
+        
     bplan = bplan_gdf.copy()
     track = track_gdf.copy()
 
@@ -104,6 +134,38 @@ def loc2elr(
     max_distance_m: float = cfg.model.max_distance_m,
     seg_length_mi: int = cfg.model.seg_length_mi
 ) -> pd.DataFrame:
+    """
+    Orchestrates loading of BPLAN and ELR data, computes ELR mile buckets, and writes output.
+
+    Parameters
+    ----------
+    bplan_source : str or Path, optional
+        Path or identifier for the BPLAN shapefile or GeoDataFrame. If None, uses config default.
+    track_source : str or Path, optional
+        Path or identifier for the NWR Track Model location or sho. If None, uses config default.
+    output_path : str or Path, optional
+        Path to write the resulting DataFrame. Supported extensions: .csv, .parquet, .json.
+        If None, no file is written.
+    loc_col : str, optional
+        Column name for location ID in BPLAN data (default from config).
+    easting_col : str, optional
+        Column name for easting coordinates (default 'EASTING').
+    northing_col : str, optional
+        Column name for northing coordinates (default 'NORTHING').
+    elr_col : str, optional
+        Column name for ELR ID in track data (default from config).
+    start_col : str, optional
+        Column name for segment start mile in track data (default from config).
+    max_distance_m : float, optional
+        Maximum search distance in meters for nearest join (default from config).
+    seg_length_mi : int, optional
+        Segment length in miles for bucketing intervals (default from config).
+
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame with STANOX locations mapped to ELR mile buckets, matching link_bplan_to_elr output.
+    """
 
     bplan_source = bplan_source or cfg.io.bplan
     track_source = track_source or cfg.io.track_model

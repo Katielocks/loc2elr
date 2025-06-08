@@ -1,0 +1,5 @@
+geopandas==1.1.0
+numpy==2.3.0
+pandas==2.3.0
+pyproj==3.7.1
+setuptools==80.8.0
