@@ -57,7 +57,6 @@ from loc2elr import link_bplan_to_elr
 import geopandas as gpd
 
 # Load your geospatial data
-bplan_gdf = gpd.read_file("data/BPLAN_loc_records.shp")
 track_gdf = gpd.read_file("data/NWR_TrackModel/NWR_TrackCentreLines.shp")
 
 # Compute ELR mile buckets without writing to disk
