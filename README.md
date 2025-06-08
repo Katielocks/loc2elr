@@ -38,6 +38,7 @@
 pip install git+https://github.com/katielocks/loc2elr.git
 
 ```
+## Quick Start
 `loc2elr`
 ```python 
 from loc2elr import loc2elr
