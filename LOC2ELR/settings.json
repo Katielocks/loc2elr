@@ -8,7 +8,7 @@
     "ELR_ID_FIELD": "ELR",
     "START_ID_FIELD": "START",
     "MAX_DISTANCE_M": 1000,
-    "SEG_LENGTH_MI":  8
+    "SEG_LENGTH_MI":  1
   },
   "output": {
     "OUTPUT_DIR": "data/raw/LOC2ELR.csv"
