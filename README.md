@@ -42,7 +42,7 @@ pip install git+https://github.com/katielocks/loc2elr.git
 ```python 
 from loc2elr import loc2elr
 
-# End-to-end processing: BPLAN → NWR Track Model → CSV output
+# End-to-end processing: BPLAN → NWR Track Model to CSV output
 result_df = loc2elr(
     bplan_source="data/BPLAN.zip",
     track_source="data/NWR_Track_Model.zip",
