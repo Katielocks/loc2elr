@@ -1,11 +1,11 @@
 # loc2elr
 
-**loc2elr** is a Python library for mapping UK rail STANOX location codes into contiguous ELR mile markers (e.g., `SWM2_112`). It provides modular, granular spatial data analysis buckets.
+**loc2elr** is a Python library for mapping UK rail location codes (default: STANOX).  location codes into contiguous ELR mile markers (e.g., `SWM2_112`). It provides modular, granular spatial data analysis buckets.
 
 ## Required Data
 
 - **BPLAN**  
-  ZIP archives containing BPLAN shapefiles and `.loc` records.  
+  ZIP archives containing BPLAN shapefiles and `loc` records.  
   Sources:  
   - [Rail Data UK](https://www.raildata.org.uk/)  
   - [OpenRailData Archive](https://github.com/raildata/openraildata)
@@ -38,11 +38,12 @@
 pip install git+https://github.com/katielocks/loc2elr.git
 
 ```
+## Quick Start
 `loc2elr`
 ```python 
 from loc2elr import loc2elr
 
-# End-to-end processing: BPLAN → NWR Track Model → CSV output
+# End-to-end processing: BPLAN → NWR Track Model to CSV output
 result_df = loc2elr(
     bplan_source="data/BPLAN.zip",
     track_source="data/NWR_Track_Model.zip",
@@ -57,7 +58,6 @@ from loc2elr import link_bplan_to_elr
 import geopandas as gpd
 
 # Load your geospatial data
-bplan_gdf = gpd.read_file("data/BPLAN_loc_records.shp")
 track_gdf = gpd.read_file("data/NWR_TrackModel/NWR_TrackCentreLines.shp")
 
 # Compute ELR mile buckets without writing to disk
