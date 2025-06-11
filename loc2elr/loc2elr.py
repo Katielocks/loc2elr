@@ -186,7 +186,7 @@ def loc2elr(
         elr_col=elr_col,
         start_col=start_col,
         max_distance_m=max_distance_m,
-        seg_length_mi=seg_length_mi
+        seg_length=seg_length_mi
     )
                                                         
     if output_path is not None:
