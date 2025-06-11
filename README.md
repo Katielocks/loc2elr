@@ -1,6 +1,6 @@
 # loc2elr
 
-**loc2elr** is a Python library for mapping UK rail STANOX location codes into contiguous ELR mile markers (e.g., `SWM2_112`). It provides modular, granular spatial data analysis buckets.
+**loc2elr** is a Python library for mapping UK rail location codes (default: STANOX).  location codes into contiguous ELR mile markers (e.g., `SWM2_112`). It provides modular, granular spatial data analysis buckets.
 
 ## Required Data
 
