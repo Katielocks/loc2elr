@@ -66,7 +66,6 @@ def link_loc_to_elr(
     track = track_gdf.copy()
 
     osgb = "EPSG:27700"
-
     if not isinstance(loc, gpd.GeoDataFrame):
         loc = gpd.GeoDataFrame(
             loc,
@@ -200,6 +199,6 @@ def loc2elr(
             raise ValueError(
                 f"Unsupported output format ‘{fmt}’. Choose one of {list(_OUTPUT_WRITERS)}"
             ) from None
-        log.info("Wrote %s records ➜ %s", len(out_df), out_path)
+        log.info("Wrote %s records to %s", len(out_df), out_path)
 
     return out_df

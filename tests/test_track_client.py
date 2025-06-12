@@ -40,7 +40,6 @@ def test_open_zip_extracts(tmp_path: Path):
     with zipfile.ZipFile(zip_path, "w") as zf:
         for p in (shp, shx, dbf):
             zf.write(p, p.name)
-    # Remove original files so only zip remains
     for p in (shp, shx, dbf):
         p.unlink()
     with _open_zip(zip_path) as extracted:
