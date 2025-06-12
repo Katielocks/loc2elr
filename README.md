@@ -62,7 +62,7 @@ track_gdf = gpd.read_file("data/NWR_TrackModel/NWR_TrackCentreLines.shp")
 
 # Compute ELR mile buckets without writing to disk
 buckets_df = link_bplan_to_elr(
-    bplan_gdf=bplan_gdf,
+    loc_df=bplan_df,
     track_gdf=track_gdf,
     max_distance_m=1000,  # maximum join distance in metres
     seg_length=5,         # bucket interval in miles
