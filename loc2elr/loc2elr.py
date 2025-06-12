@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Callable
+from typing import Callable,Union
 
 import geopandas as gpd
 import pandas as pd
@@ -19,8 +19,8 @@ __all__ = [
 log = logging.getLogger(__name__)
 
 
-def link_bplan_to_elr(
-    bplan_gdf: gpd.GeoDataFrame,
+def link_loc_to_elr(
+    loc_df: Union[pd.DataFrame,gpd.GeoDataFrame],
     track_gdf: gpd.GeoDataFrame,
     *,
     loc_col: str = cfg.model.loc_id_field,
@@ -36,8 +36,8 @@ def link_bplan_to_elr(
 
     Parameters
     ----------
-    bplan_gdf : geopandas.GeoDataFrame
-        GeoDataFrame containing STANOX points with columns for location ID, easting and northing.
+    loc_df : geopandas.GeoDataFrame,pd.Dataframe
+        pd.Dataframe or GeoDataFrame containing columns for location ID, easting and northing.
     track_gdf : geopandas.GeoDataFrame
         GeoDataFrame containing ELR track segments with ELR IDs and start mile markers.
     loc_col : str, optional
@@ -62,35 +62,38 @@ def link_bplan_to_elr(
         'ELR_MIL' column combining ELR ID and bucketed start mile.
     """
         
-    bplan = bplan_gdf.copy()
+    loc = loc_df.copy()
     track = track_gdf.copy()
 
     osgb = "EPSG:27700"
-    if bplan.crs != osgb:
-        raise ValueError("bplan_gdf CRS must be EPSG:27700")
+
+    if not isinstance(loc, gpd.GeoDataFrame):
+        loc = gpd.GeoDataFrame(
+            loc,
+            geometry=gpd.points_from_xy(loc[easting_col], loc[northing_col]),
+            crs=osgb,
+        )
+
+
+    if loc.crs != osgb:
+        raise ValueError("loc_gdf CRS must be EPSG:27700")
     if track.crs != osgb:
         raise ValueError("track_gdf CRS must be EPSG:27700")
 
-    missing_bplan = {loc_col, easting_col, northing_col} - set(bplan.columns)
-    if missing_bplan:
-        raise KeyError(f"BPlan missing columns: {sorted(missing_bplan)}")
+    missing_loc = {loc_col, easting_col, northing_col} - set(loc.columns)
+    if missing_loc:
+        raise KeyError(f"loc missing columns: {sorted(missing_loc)}")
 
     missing_track = {elr_col, start_col} - set(track.columns)
     if missing_track:
         raise KeyError(f"Track model missing columns: {sorted(missing_track)}")
 
 
-    if not isinstance(bplan, gpd.GeoDataFrame):
-        bplan = gpd.GeoDataFrame(
-            bplan,
-            geometry=gpd.points_from_xy(bplan[easting_col], bplan[northing_col]),
-            crs=osgb,
-        )
 
     track = track[[elr_col, start_col, "geometry"]]
 
     joined = gpd.sjoin_nearest(
-        bplan,
+        loc,
         track,
         how="left",
         max_distance=max_distance_m,
@@ -133,12 +136,12 @@ def loc2elr(
     seg_length_mi: int = cfg.model.seg_length_mi
 ) -> pd.DataFrame:
     """
-    Orchestrates loading of BPLAN and ELR data, computes ELR mile buckets, and writes output.
+    Orchestrates loading of loc and ELR data, computes ELR mile buckets, and writes output.
 
     Parameters
     ----------
-    bplan_source : str or Path, optional
-        Path or identifier for the BPLAN shapefile or GeoDataFrame. If None, uses config default.
+    loc_source : str or Path, optional
+        Path or identifier for the Bplan.zip. If None, uses config default.
     track_source : str or Path, optional
         Path or identifier for the NWR Track Model location or sho. If None, uses config default.
     output_path : str or Path, optional
@@ -168,17 +171,15 @@ def loc2elr(
     bplan_source = bplan_source or cfg.io.bplan
     track_source = track_source or cfg.io.track_model
                                                                    
-    bplan_gdf = (
-        get_bplan(bplan_source) if not isinstance(bplan_source, gpd.GeoDataFrame) else bplan_source
-    )
+    loc_df = get_bplan(bplan_source)
 
     with get_elr(track_source) as track_path:
         track_gdf = gpd.read_file(track_path)
         if track_gdf.crs is None:
             track_gdf.set_crs("EPSG:27700", inplace=True)
 
-    out_df = link_bplan_to_elr(
-        bplan_gdf=bplan_gdf,
+    out_df = link_loc_to_elr(
+        loc_df= loc_df,
         track_gdf=track_gdf,
         loc_col=loc_col,
         easting_col=easting_col,

@@ -65,12 +65,11 @@ def get_elr(input_path: Union[str, Path]):
 
     elif input_path.suffix.lower() == ".shp":
         shp = _validate_standalone_shp(input_path)
-        yield shp                                    # nothing to clean up
+        yield shp                               
 
     elif input_path.is_dir():
         stem = "nwr_trackcentrelines"
         shp = _validate_standalone_shp(input_path / f"{stem}.shp")
-        yield shp                                    # nothing to clean up
-
+        yield shp                                  
     else:
         raise FileNotFoundError(f"ELR source not found at {input_path}")
