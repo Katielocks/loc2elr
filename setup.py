@@ -14,7 +14,7 @@ if requirements_path.exists():
 
 setuptools.setup(
     name="loc2elr",                    
-    version="0.4.1",                                                      
+    version="0.4.2",                                                      
     author="Katherine Whitelock",
     author_email="ktwhitelock@outlook.com",
     description="An algorithm which uses BPLAN geography and NWR Track Models to derive unique standard track granular buckets for STANOX codes",

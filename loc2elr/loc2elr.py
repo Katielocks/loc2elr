@@ -108,9 +108,11 @@ def link_loc_to_elr(
         .floordiv(seg_length)  
         .mul(seg_length)      
         )
+    out_df = out_df[out_df[elr_col].notna()]
     out_df["ELR_MIL"] = (
-        out_df[elr_col].fillna("UNKNOWN") + "_" + out_df[start_col].astype("str")
+        out_df[elr_col] + "_" + out_df[start_col].astype("str")
     )
+    out_df[[loc_col,easting_col,northing_col,"ELR_MIL"]]
     return out_df
 
 
